@@ -9,10 +9,8 @@ import {
   getAuctionArtworks,
 } from "@/data/mockData";
 import Link from "next/link";
-import Navbar from "@/features/home/nabvar";
 import ArtworkCard from "@/features/home/artwork-card";
 import ArtistCard from "@/features/home/artist-card";
-import Footer from "@/features/home/footer";
 
 const Page = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -30,9 +28,6 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gallery-cream flex flex-col">
-      <Navbar />
-
-      {/* Hero Section */}
       <section className="relative h-[80vh] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -192,8 +187,6 @@ const Page = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };
