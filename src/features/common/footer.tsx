@@ -1,7 +1,17 @@
+"use client";
+
 import { Instagram, Twitter, Facebook, Mail } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  // Hide footer on admin and artist dashboard routes
+  const isHidden = pathname?.startsWith("/admin") || pathname?.startsWith("/artist");
+
+  if (isHidden) return null;
+
   return (
     <footer className="bg-black text-white py-16">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4">

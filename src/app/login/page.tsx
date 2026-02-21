@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +35,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -43,11 +47,18 @@ const Login = () => {
     },
   });
 
-  function onSubmit(values: LoginFormValues) {
-    console.log(values);
-    toast.success("Login successful!", {
-      description: "Welcome back to Artful!",
-    });
+  async function onSubmit(values: LoginFormValues) {
+    try {
+      await login(values.email, values.password);
+      toast.success("Login successful!", {
+        description: "Welcome back to ArtBook!",
+      });
+      router.push("/");
+    } catch (error) {
+      toast.error("Login failed", {
+        description: (error as Error).message,
+      });
+    }
   }
 
   return (
@@ -184,7 +195,7 @@ const Login = () => {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
                 className="font-medium text-purple-600 hover:underline"

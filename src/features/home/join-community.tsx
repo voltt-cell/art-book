@@ -9,7 +9,7 @@ function JoinCommunity() {
           Join Our Art Community
         </h2>
         <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-          Whether you're an artist looking to showcase your work or a collector
+          Whether you&apos;re an artist looking to showcase your work or a collector
           in search of unique pieces, become part of our growing community of
           art enthusiasts.
         </p>

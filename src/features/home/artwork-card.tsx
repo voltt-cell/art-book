@@ -1,85 +1,187 @@
-import { formatPrice } from "@/data/mockData";
-import { Clock } from "lucide-react";
-import type { Artwork, Artist } from "@/data/mockData";
+"use client";
+
+import { useState } from "react";
+import { ImageOff, Heart } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth-context";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface ArtworkCardProps {
-  artwork: Artwork;
-  artist: Artist;
+  artwork: {
+    id: string | number;
+    title: string;
+    artist: string;
+    artistId: string;
+    price: number;
+    image: string;
+    medium: string;
+    isAuction: boolean;
+    auctionEndDate?: Date;
+    currentBid?: number;
+    minimumBid?: number;
+  };
+  artist: {
+    id: string | number;
+    name: string;
+    shopName?: string;
+    profileImage?: string;
+  };
 }
 
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(price);
+
 const ArtworkCard = ({ artwork, artist }: ArtworkCardProps) => {
-  // Calculate days remaining for auction
-  const getDaysRemaining = (endDate: Date): number => {
-    const now = new Date();
-    const diffTime = endDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+  const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
+  const { isFavorite, toggleFavorite, togglingId } = useFavorites();
+  const isOwner = user?.id === artwork.artistId;
+  const [imgError, setImgError] = useState(false);
+
+  const isFav = isFavorite(String(artwork.id));
+  const isToggling = togglingId === String(artwork.id);
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to purchase artwork");
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const res = await api.post<{ sessionUrl: string }>("/payments/checkout", {
+        artworkId: artwork.id,
+      });
+      window.location.href = res.sessionUrl;
+    } catch (error) {
+      toast.error("Purchase failed", {
+        description: (error as Error).message,
+      });
+    }
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error("Please log in to add favorites");
+      router.push("/login");
+      return;
+    }
+    toggleFavorite(
+      String(artwork.id),
+      {
+        id: String(artwork.id),
+        title: artwork.title,
+        imageUrl: artwork.image,
+        artistId: artwork.artistId,
+        price: String(artwork.price),
+        status: 'published', // Default as cards are usually visible/published
+        medium: artwork.medium,
+        listingType: artwork.isAuction ? 'auction' : 'fixed',
+      },
+      {
+        id: String(artist.id),
+        name: artist.name,
+        profileImage: artist.profileImage || null,
+      }
+    );
   };
 
   return (
-    <div className="artwork-card group">
-      <div className="relative overflow-hidden rounded-lg">
-        <Link href={`/artwork/${artwork.id}`}>
-          <img
-            src={artwork.image}
-            alt={artwork.title}
-            className="w-full h-80 object-cover rounded-lg"
-          />
-          <div className="absolute inset-0 bg-gallery-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300">
-            {artwork.isAuction && artwork.auctionEndDate && (
-              <div className="absolute top-4 right-4 bg-gallery-black/80 text-white text-xs py-1 px-2 rounded-full flex items-center">
-                <Clock className="w-3 h-3 mr-1" />
-                <span>
-                  {getDaysRemaining(artwork.auctionEndDate)} days left
-                </span>
-              </div>
-            )}
-          </div>
-        </Link>
-      </div>
-
-      <div className="mt-3">
-        <Link href={`/artwork/${artwork.id}`} className="block">
-          <h3 className="font-serif text-lg font-medium">{artwork.title}</h3>
-        </Link>
-        <Link
-          href={`/artist/${artist.id}`}
-          className="text-gallery-gray hover:text-gallery-black transition-colors"
-        >
-          {artist.name}
-        </Link>
-        <div className="flex justify-between items-center mt-2">
-          <div>
-            {artwork.isAuction ? (
-              <div>
-                <p className="font-medium">
-                  {formatPrice(artwork.currentBid || 0)}
-                </p>
-                <p className="text-xs text-gallery-gray">Current Bid</p>
-              </div>
-            ) : (
-              <p className="font-medium">{formatPrice(artwork.price)}</p>
-            )}
-          </div>
-          {artwork.isAuction ? (
-            <Link
-              href={`/artwork/${artwork.id}`}
-              className="text-sm font-medium text-gallery-accent hover:underline"
-            >
-              Place Bid
-            </Link>
+    <motion.div
+      className="group relative"
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="relative overflow-hidden rounded-xl aspect-square border border-gray-200">
+        <Link href={`/artwork/${artwork.id}`} className="block w-full h-full">
+          {artwork.image && !imgError ? (
+            <img
+              src={artwork.image}
+              alt={artwork.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 border border-gray-200"
+              onError={() => setImgError(true)}
+            />
           ) : (
-            <Link
-              href={`/artwork/${artwork.id}`}
-              className="text-sm font-medium text-gallery-accent hover:underline"
-            >
-              Buy Now
-            </Link>
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 border border-gray-200">
+              <ImageOff className="w-8 h-8 text-gray-300 mb-2" />
+              <span className="text-xs text-gray-400">No Image</span>
+            </div>
+          )}
+
+          {/* Overlay Gradient on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </Link>
+
+        {/* Top Right: Favorite Button (Visible on Hover) */}
+        {!isOwner && (
+          <button
+            onClick={handleToggleFavorite}
+            disabled={isToggling}
+            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 ${isFav
+              ? "bg-white text-red-500 shadow-sm opacity-100"
+              : "bg-white/20 text-white hover:bg-white hover:text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
+              }`}
+          >
+            <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
+          </button>
+        )}
+
+        {/* Bottom Actions (Visible on Hover) */}
+        <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+          {!isOwner && (
+            artwork.isAuction ? (
+              <Button
+                className="w-full bg-black/80 backdrop-blur-md text-white hover:bg-black font-medium border border-white/10"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isAuthenticated) return router.push("/login"); // Fixed: logic within onClick
+                  router.push(`/artwork/${artwork.id}`);
+                }}
+              >
+                Place Bid
+              </Button>
+            ) : (
+              <Button
+                className="w-full bg-black/80 backdrop-blur-md text-white hover:bg-black font-medium border border-white/10"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleBuyNow();
+                }}
+              >
+                Add to Cart
+              </Button>
+            )
           )}
         </div>
       </div>
-    </div>
+
+      <div className="pt-3 pb-1">
+        <div className="flex justify-between items-start gap-4 mb-1">
+          <div className="flex-1">
+            <Link href={`/artwork/${artwork.id}`}>
+              <h3 className="font-serif text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors line-clamp-1">
+                {artwork.title}
+              </h3>
+            </Link>
+            {artist && (
+              <Link href={`/artist/${artist.id}`} className="block mt-0.5 text-xs text-gray-400 hover:text-gray-900 hover:underline truncate">
+                {artist.shopName || artist.name}
+              </Link>
+            )}
+          </div>
+          <div className="text-sm font-bold text-gray-900 pt-0.5">
+            {formatPrice(artwork.isAuction ? (artwork.currentBid || artwork.price) : artwork.price)}
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

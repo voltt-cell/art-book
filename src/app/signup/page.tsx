@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,12 +32,21 @@ const signupSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
+  shopName: z.string().optional(),
   role: z.enum(["buyer", "seller"], {
     required_error: "Please select a role.",
   }),
   terms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
+}).refine((data) => {
+  if (data.role === 'seller' && (!data.shopName || data.shopName.length < 2)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Shop Name is required for sellers (min 2 chars).",
+  path: ["shopName"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -44,6 +54,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { signup } = useAuth();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -51,23 +62,36 @@ const Signup = () => {
       name: "",
       email: "",
       password: "",
+      shopName: "",
       role: "buyer",
       terms: false,
     },
   });
 
-  function onSubmit(values: SignupFormValues) {
-    console.log(values);
-    toast.success("Account created successfully!", {
-      description: `Welcome to Artful! You've joined as a ${values.role}.`,
-    });
+  async function onSubmit(values: SignupFormValues) {
+    try {
+      const role = values.role === "seller" ? "artist" : "buyer";
+      await signup({
+        email: values.email,
+        password: values.password,
+        name: values.name,
+        shopName: role === "artist" ? values.shopName : undefined,
+        role,
+      });
 
-    localStorage.setItem("userRole", values.role);
+      toast.success("Account created successfully!", {
+        description: `Welcome to ArtBook! You've joined as a ${values.role}.`,
+      });
 
-    if (values.role === "seller") {
-      router.push("/seller/dashboard");
-    } else {
-      router.push("/");
+      if (role === "artist") {
+        router.push("/artist/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      toast.error("Signup failed", {
+        description: (error as Error).message,
+      });
     }
   }
 
@@ -125,6 +149,22 @@ const Signup = () => {
                   </FormItem>
                 )}
               />
+
+              {form.watch("role") === "seller" && (
+                <FormField
+                  control={form.control}
+                  name="shopName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Shop Name <span className="text-red-500">*</span></FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your unique shop name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
