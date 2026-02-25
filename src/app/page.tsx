@@ -3,7 +3,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, Gavel, Users } from "lucide-react";
 import Link from "next/link";
 import ArtworkCard from "@/features/home/artwork-card";
 import ArtistCard from "@/features/home/artist-card";
@@ -250,7 +250,11 @@ const Page = () => {
                 </motion.div>
               ))
             ) : (
-              <p className="col-span-full text-center text-gray-500 py-10">No active auctions at the moment.</p>
+              <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+                <Gavel className="w-12 h-12 text-purple-200 mb-4" />
+                <h3 className="text-xl font-serif font-semibold text-gray-900 mb-2">No active auctions</h3>
+                <p className="text-gray-500 max-w-sm">Check back later for exciting new auction opportunities.</p>
+              </div>
             )}
           </motion.div>
         </div>
@@ -290,7 +294,11 @@ const Page = () => {
                 </motion.div>
               ))
             ) : (
-              <p>No artists found.</p>
+              <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+                <Users className="w-12 h-12 text-purple-200 mb-4" />
+                <h3 className="text-xl font-serif font-semibold text-gray-900 mb-2">No featured artists</h3>
+                <p className="text-gray-500 max-w-sm">We are currently curating our list of featured artists.</p>
+              </div>
             )}
           </motion.div>
         </div>

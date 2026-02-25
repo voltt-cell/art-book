@@ -226,10 +226,9 @@ export default function ArtistDashboard() {
                     </p>
                     <Button
                         onClick={() => router.push("/artist/create")}
-                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6"
                     >
-                        <Plus className="mr-2 h-4 w-4" /> Create Your
-                        First Artwork
+                        <Plus className="mr-2 h-4 w-4" /> Create Your First Artwork
                     </Button>
                 </div>
             )}

@@ -36,19 +36,21 @@ export default function CartPage() {
 
     if (!cartItems || cartItems.length === 0) {
         return (
-            <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
-                <div className="bg-purple-50 p-6 rounded-full mb-6">
-                    <ShoppingBag className="w-12 h-12 text-purple-300" />
+            <div className="container mx-auto px-4 py-20">
+                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+                    <ShoppingBag className="w-16 h-16 text-purple-200 mx-auto mb-4" />
+                    <h2 className="text-xl font-serif font-semibold mb-2">
+                        Your cart is empty
+                    </h2>
+                    <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                        Looks like checking out art hasn't caught your eye yet?
+                    </p>
+                    <Link href="/artworks">
+                        <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6">
+                            Browse Artworks
+                        </Button>
+                    </Link>
                 </div>
-                <h1 className="text-2xl font-serif font-bold mb-2">Your cart is empty</h1>
-                <p className="text-gray-500 mb-8 max-w-md">
-                    Looks like checking out art hasn't caught your eye yet?
-                </p>
-                <Link href="/artworks">
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                        Browse Artworks
-                    </Button>
-                </Link>
             </div>
         );
     }

@@ -72,8 +72,7 @@ export default {
 				}
 			},
 			fontFamily: {
-				'serif': ['Playfair Display', 'Georgia', 'serif'],
-				'sans': ['Inter', 'Helvetica', 'Arial', 'sans-serif'],
+				'sans': ['var(--font-outfit)', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

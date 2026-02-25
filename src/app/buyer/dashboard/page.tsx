@@ -247,7 +247,7 @@ export default function BuyerDashboard() {
                                     {ordersLoading ? (
                                         <div className="flex justify-center py-8"><Loader2 className="animate-spin text-purple-500" /></div>
                                     ) : (orders || []).length === 0 && myBids.length === 0 ? (
-                                        <div className="text-center py-10">
+                                        <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 mt-2">
                                             <p className="text-gray-500">No recent activity found.</p>
                                             <Button className="mt-4 bg-purple-600 rounded-full" onClick={() => window.location.href = "/artworks"}>Start Exploring</Button>
                                         </div>
@@ -455,10 +455,11 @@ export default function BuyerDashboard() {
                                     <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
                                 </div>
                             ) : uniqueWon.length === 0 ? (
-                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-16 text-center">
-                                    <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                                    <p className="text-gray-500 text-lg">No won auctions yet</p>
-                                    <p className="text-gray-400 text-sm mt-1">Keep bidding to win your favorite pieces</p>
+                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-20 text-center">
+                                    <Trophy className="h-16 w-16 text-purple-200 mx-auto mb-4" />
+                                    <h2 className="text-xl font-serif font-semibold mb-2">No won auctions yet</h2>
+                                    <p className="text-gray-500 mb-6">Keep bidding to win your favorite pieces. Your victories will appear here.</p>
+                                    <Button onClick={() => window.location.href = "/auctions"} className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6">Find Auctions</Button>
                                 </div>
                             ) : (
                                 <motion.div

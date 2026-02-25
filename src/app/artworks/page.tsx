@@ -3,7 +3,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, Palette } from "lucide-react";
 import ArtworkCard from "@/features/home/artwork-card";
 import { fetcher } from "@/lib/swr";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
@@ -170,16 +170,20 @@ export default function ArtworksPage() {
                 {isLoading ? (
                     <ArtworkSkeletonGrid count={8} />
                 ) : filteredArtworks.length === 0 ? (
-                    <div className="text-center py-20">
-                        <p className="text-gray-500 text-lg">
-                            No artworks match your filters.
+                    <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+                        <Palette className="w-16 h-16 text-purple-200 mx-auto mb-4" />
+                        <h2 className="text-xl font-serif font-semibold mb-2">
+                            No artworks found
+                        </h2>
+                        <p className="text-gray-500 mb-6">
+                            We couldn't find any artworks matching your current filters.
                         </p>
                         <button
                             onClick={() => {
                                 setSelectedCategory("all");
                                 setSearchQuery("");
                             }}
-                            className="mt-4 text-purple-600 hover:text-purple-700 font-medium"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full font-medium transition-colors"
                         >
                             Clear all filters
                         </button>

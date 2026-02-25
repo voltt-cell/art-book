@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Heart, Store, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { CartBadge } from "@/components/cart-badge";
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Navbar = () => {
   const { user, isAuthenticated, isArtist, isBuyer, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const handleLogout = async () => {
@@ -43,17 +44,33 @@ const Navbar = () => {
         </Link>
 
         {/* Navigation Links - Center */}
-        <nav className="hidden lg:flex items-center justify-center space-x-8 absolute left-1/2 -translate-x-1/2">
-          <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+        <nav className="hidden lg:flex items-center justify-center space-x-6 absolute left-1/2 -translate-x-1/2 h-full">
+          <Link
+            href="/"
+            className={`flex items-center h-full text-sm font-medium px-2 transition-colors border-b-2 -mb-[2px] ${pathname === "/" ? "text-purple-600 border-purple-600" : "text-gray-600 border-transparent hover:text-purple-600"
+              }`}
+          >
             Home
           </Link>
-          <Link href="/artworks" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          <Link
+            href="/artworks"
+            className={`flex items-center h-full text-sm font-medium px-2 transition-colors border-b-2 -mb-[2px] ${pathname === "/artworks" ? "text-purple-600 border-purple-600" : "text-gray-600 border-transparent hover:text-purple-600"
+              }`}
+          >
             Artworks
           </Link>
-          <Link href="/artists" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          <Link
+            href="/artists"
+            className={`flex items-center h-full text-sm font-medium px-2 transition-colors border-b-2 -mb-[2px] ${pathname === "/artists" ? "text-purple-600 border-purple-600" : "text-gray-600 border-transparent hover:text-purple-600"
+              }`}
+          >
             Artists
           </Link>
-          <Link href="/auctions" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          <Link
+            href="/auctions"
+            className={`flex items-center h-full text-sm font-medium px-2 transition-colors border-b-2 -mb-[2px] ${pathname === "/auctions" ? "text-purple-600 border-purple-600" : "text-gray-600 border-transparent hover:text-purple-600"
+              }`}
+          >
             Auctions
           </Link>
         </nav>
