@@ -24,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fontOutfit.variable} font-sans antialiased`}
+        className={`${fontOutfit.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <Providers>
           <Navbar />
-          {children}
+          <main className="flex-1">
+            {children}
+          </main>
           <Footer />
           <Toaster />
         </Providers>
