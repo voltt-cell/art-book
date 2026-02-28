@@ -8,8 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Store, CheckCircle2, XCircle, Loader2, Clock, Sparkles, ArrowRight } from "lucide-react";
+import { Store, CheckCircle2, XCircle, Loader2, Clock, Sparkles, ArrowRight, Paintbrush, Quote } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 type ApplicationStatus = {
     id: string;
@@ -18,13 +25,33 @@ type ApplicationStatus = {
     adminNotes?: string;
 };
 
+const ART_MEDIUMS = [
+    "Painting",
+    "Digital Art",
+    "Photography",
+    "Sculpture",
+    "Mixed Media",
+    "Illustration",
+    "Other"
+];
+
+const EXPERIENCE_LEVELS = [
+    "Just starting out",
+    "1-3 years (Hobbyist)",
+    "3-5 years (Emerging)",
+    "5+ years (Professional)"
+];
+
 export default function ShopApplyPage() {
     const { isAuthenticated, loading: authLoading, hasShop } = useAuth();
     const router = useRouter();
 
     const [shopName, setShopName] = useState("");
-    const [shopDescription, setShopDescription] = useState("");
+    const [medium, setMedium] = useState("");
+    const [experience, setExperience] = useState("");
+    const [vision, setVision] = useState("");
     const [portfolioUrl, setPortfolioUrl] = useState("");
+
     const [nameAvailable, setNameAvailable] = useState<boolean | null>(null);
     const [checkingName, setCheckingName] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -78,11 +105,20 @@ export default function ShopApplyPage() {
             return;
         }
 
+        if (!medium || !experience) {
+            toast.error("Please select your medium and experience level");
+            return;
+        }
+
         setSubmitting(true);
+
+        // Bundle extra info into the description field since DB schema expects strings
+        const bundledDescription = `Primary Medium: ${medium}\nExperience Level: ${experience}\n\nArtistic Vision & Background:\n${vision}`;
+
         try {
             await api.post("/shop/apply", {
                 shopName: shopName.trim(),
-                shopDescription,
+                shopDescription: bundledDescription,
                 portfolioUrl: portfolioUrl || undefined,
             });
             toast.success("Application submitted!");
@@ -116,217 +152,274 @@ export default function ShopApplyPage() {
         return null;
     }
 
-    // Show existing application status
-    if (existingApp) {
-        return (
-            <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-                {/* Artistic Background */}
-                <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-purple-200/30 blur-[120px]" />
-                    <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-pink-200/30 blur-[120px]" />
-                </div>
-
-                <div className="container mx-auto px-4 py-20 max-w-lg relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white/80 backdrop-blur-xl rounded-3xl p-10 border border-white/50 shadow-xl text-center"
-                    >
-                        {existingApp.status === "pending" && (
-                            <>
-                                <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
-                                    <Clock className="h-8 w-8 text-amber-600" />
-                                </div>
-                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-3">
-                                    Application Under Review
-                                </h2>
-                                <p className="text-gray-600 mb-6">
-                                    Your application for <span className="font-semibold text-purple-600">&quot;{existingApp.shopName}&quot;</span> is being reviewed by our team. We&apos;ll notify you once it&apos;s approved.
-                                </p>
-                                <p className="text-sm text-gray-400 italic font-serif">
-                                    &quot;Art is not what you see, but what you make others see.&quot; — Edgar Degas
-                                </p>
-                            </>
-                        )}
-                        {existingApp.status === "rejected" && (
-                            <>
-                                <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-6">
-                                    <XCircle className="h-8 w-8 text-red-600" />
-                                </div>
-                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-3">
-                                    Application Not Approved
-                                </h2>
-                                <p className="text-gray-600 mb-4">
-                                    Unfortunately, your application was not approved.
-                                </p>
-                                {existingApp.adminNotes && (
-                                    <p className="text-sm text-gray-500 bg-gray-50 rounded-lg p-4 mb-6">
-                                        <span className="font-medium">Admin notes:</span> {existingApp.adminNotes}
-                                    </p>
-                                )}
-                                <Button
-                                    onClick={() => setExistingApp(null)}
-                                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                                >
-                                    Apply Again
-                                </Button>
-                            </>
-                        )}
-                        {existingApp.status === "approved" && (
-                            <>
-                                <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6">
-                                    <CheckCircle2 className="h-8 w-8 text-green-600" />
-                                </div>
-                                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-3">
-                                    Congratulations!
-                                </h2>
-                                <p className="text-gray-600 mb-6">
-                                    Your shop &quot;{existingApp.shopName}&quot; has been approved! Start adding your artworks.
-                                </p>
-                                <Button
-                                    onClick={() => router.push("/shop/dashboard")}
-                                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                                >
-                                    Go to My Shop <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </>
-                        )}
-                    </motion.div>
-                </div>
-            </div>
-        );
-    }
-
-    // Application form
-    return (
-        <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-            {/* Artistic Background */}
-            <div className="absolute top-0 left-0 w-full h-full">
-                <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-purple-200/30 blur-[120px]" />
-                <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-200/20 blur-[120px]" />
-            </div>
-
-            <div className="container mx-auto px-4 py-16 max-w-2xl relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <div className="text-center mb-10">
-                        <div className="mx-auto w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mb-6">
-                            <Sparkles className="h-8 w-8 text-purple-600" />
+    // Existing Application View
+    const renderApplicationStatus = () => (
+        <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="max-w-lg w-full bg-white rounded-3xl p-10 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center"
+            >
+                {existingApp?.status === "pending" && (
+                    <>
+                        <div className="mx-auto w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center mb-6 border-4 border-amber-100">
+                            <Clock className="h-10 w-10 text-amber-500" />
                         </div>
-                        <h1 className="text-4xl font-serif font-bold text-gray-900 mb-3">
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-3">
+                            Application Under Review
+                        </h2>
+                        <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+                            Your application for <span className="font-semibold text-purple-600">"{existingApp.shopName}"</span> is currently being reviewed by our curation team.
+                        </p>
+                        <div className="p-4 bg-gray-50 rounded-2xl text-sm italic text-gray-500 font-serif border border-gray-100">
+                            We'll notify you via email as soon as a decision is made. Thank you for your patience.
+                        </div>
+                    </>
+                )}
+                {existingApp?.status === "rejected" && (
+                    <>
+                        <div className="mx-auto w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-6 border-4 border-red-100">
+                            <XCircle className="h-10 w-10 text-red-500" />
+                        </div>
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-3">
+                            Application Not Approved
+                        </h2>
+                        <p className="text-gray-600 mb-6 max-w-sm mx-auto">
+                            Unfortunately, your application was not approved at this time.
+                        </p>
+                        {existingApp.adminNotes && (
+                            <div className="bg-red-50 text-red-800 text-sm p-5 rounded-xl mb-8 text-left border border-red-100">
+                                <span className="font-semibold block mb-1">Feedback from our team:</span>
+                                {existingApp.adminNotes}
+                            </div>
+                        )}
+                        <Button
+                            onClick={() => setExistingApp(null)}
+                            className="w-full bg-purple-900 hover:bg-purple-950 text-white h-12 rounded-xl text-base"
+                        >
+                            Start New Application
+                        </Button>
+                    </>
+                )}
+                {existingApp?.status === "approved" && (
+                    <>
+                        <div className="mx-auto w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mb-6 border-4 border-green-100">
+                            <CheckCircle2 className="h-10 w-10 text-green-500" />
+                        </div>
+                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-3">
+                            Welcome to ArtBook
+                        </h2>
+                        <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+                            Your shop <span className="font-semibold text-purple-600">"{existingApp.shopName}"</span> has been successfully verified! You're ready to start selling.
+                        </p>
+                        <Button
+                            onClick={() => router.push("/shop/dashboard")}
+                            className="w-full bg-purple-900 hover:bg-purple-950 text-white h-12 rounded-xl text-base shadow-lg shadow-purple-900/20"
+                        >
+                            Go to My Shop <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </>
+                )}
+            </motion.div>
+        </div>
+    );
+
+    // Form View
+    const renderApplicationForm = () => (
+        <div className="flex flex-col flex-1 h-full overflow-y-auto custom-scrollbar">
+            <div className="flex-1 w-full max-w-2xl mx-auto py-12 px-6 sm:px-12 flex flex-col justify-center">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                    <div className="mb-10 flex flex-col items-center text-center">
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-purple-100 mb-6">
+                            <Sparkles className="h-7 w-7 text-purple-600" />
+                        </div>
+                        <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 tracking-tight mb-4">
                             Open Your Shop
                         </h1>
-                        <p className="text-gray-600 text-lg max-w-md mx-auto">
-                            Start selling your art to collectors around the world. Complete the form below to get started.
+                        <p className="text-gray-500 text-lg max-w-md">
+                            Join our community of verified artists and start selling your masterpieces directly to collectors.
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-xl space-y-6">
-                            {/* Shop Name with live check */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Shop Name <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <Input
-                                        value={shopName}
-                                        onChange={(e) => setShopName(e.target.value)}
-                                        placeholder="e.g. Sunset Studios"
-                                        className="pr-10 h-12"
-                                        required
-                                        minLength={2}
-                                        maxLength={50}
-                                    />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                        <AnimatePresence mode="wait">
-                                            {checkingName && (
-                                                <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                                    <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-                                                </motion.div>
-                                            )}
-                                            {!checkingName && nameAvailable === true && (
-                                                <motion.div key="available" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
-                                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                                </motion.div>
-                                            )}
-                                            {!checkingName && nameAvailable === false && (
-                                                <motion.div key="taken" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
-                                                    <XCircle className="h-5 w-5 text-red-500" />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-                                </div>
-                                {!checkingName && nameAvailable === false && (
-                                    <p className="text-xs text-red-500">This name is already taken. Try another.</p>
-                                )}
-                                {!checkingName && nameAvailable === true && (
-                                    <p className="text-xs text-green-600">Great, this name is available!</p>
-                                )}
-                                <p className="text-xs text-gray-400">Your unique shop name. This will be visible to all buyers.</p>
-                            </div>
-
-                            {/* Description */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Shop Description <span className="text-red-500">*</span>
-                                </label>
-                                <Textarea
-                                    value={shopDescription}
-                                    onChange={(e) => setShopDescription(e.target.value)}
-                                    placeholder="Tell us about your art, your style, and what makes your work unique..."
-                                    rows={4}
-                                    className="resize-none"
-                                    required
-                                    minLength={10}
-                                    maxLength={500}
-                                />
-                                <p className="text-xs text-gray-400">{shopDescription.length}/500 characters</p>
-                            </div>
-
-                            {/* Portfolio URL */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Portfolio URL <span className="text-gray-400 font-normal">(optional)</span>
-                                </label>
+                    <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/40">
+                        {/* 1. Shop Name */}
+                        <div className="space-y-3">
+                            <label className="block text-sm font-semibold text-gray-900">
+                                Artistic Identity / Shop Name <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
                                 <Input
-                                    value={portfolioUrl}
-                                    onChange={(e) => setPortfolioUrl(e.target.value)}
-                                    placeholder="https://yourportfolio.com"
-                                    type="url"
-                                    className="h-12"
+                                    value={shopName}
+                                    onChange={(e) => setShopName(e.target.value)}
+                                    placeholder="e.g. Monet Studios"
+                                    className="h-12 bg-gray-50/50 border-gray-200 focus:border-purple-500 focus:ring-purple-500 pr-10 rounded-xl"
+                                    required
+                                    minLength={2}
+                                    maxLength={50}
                                 />
-                                <p className="text-xs text-gray-400">Share a link to your existing portfolio or social media.</p>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    <AnimatePresence mode="wait">
+                                        {checkingName && (
+                                            <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                                            </motion.div>
+                                        )}
+                                        {!checkingName && nameAvailable === true && (
+                                            <motion.div key="available" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
+                                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                            </motion.div>
+                                        )}
+                                        {!checkingName && nameAvailable === false && (
+                                            <motion.div key="taken" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
+                                                <XCircle className="h-5 w-5 text-red-500" />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
+                            {!checkingName && nameAvailable === false && (
+                                <p className="text-xs text-red-500 font-medium">This name is already claimed by another artist.</p>
+                            )}
+                            <p className="text-xs text-gray-500">Your unique public identifier inside the ArtBook ecosystem.</p>
+                        </div>
+
+                        {/* 2. Medium & Experience Split */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {/* Primary Medium */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-semibold text-gray-900">
+                                    Primary Medium <span className="text-red-500">*</span>
+                                </label>
+                                <Select value={medium} onValueChange={setMedium} required>
+                                    <SelectTrigger className="h-12 rounded-xl bg-gray-50/50 border-gray-200">
+                                        <SelectValue placeholder="Select medium" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {ART_MEDIUMS.map((m) => (
+                                            <SelectItem key={m} value={m}>{m}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
-                            <div className="pt-4">
-                                <Button
-                                    type="submit"
-                                    disabled={submitting || !nameAvailable || !shopDescription || shopDescription.length < 10}
-                                    className="w-full bg-purple-600 hover:bg-purple-700 text-white h-12 text-base font-medium rounded-xl"
-                                >
-                                    {submitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Submitting...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Store className="mr-2 h-4 w-4" />
-                                            Submit Application
-                                        </>
-                                    )}
-                                </Button>
-                                <p className="text-xs text-center text-gray-400 mt-3">
-                                    Applications are reviewed by our team and typically approved within 24 hours.
-                                </p>
+                            {/* Experience Level */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-semibold text-gray-900">
+                                    Experience Level <span className="text-red-500">*</span>
+                                </label>
+                                <Select value={experience} onValueChange={setExperience} required>
+                                    <SelectTrigger className="h-12 rounded-xl bg-gray-50/50 border-gray-200">
+                                        <SelectValue placeholder="Select level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {EXPERIENCE_LEVELS.map((e) => (
+                                            <SelectItem key={e} value={e}>{e}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
+                        </div>
+
+                        {/* 3. Artistic Vision */}
+                        <div className="space-y-3 flex flex-col">
+                            <label className="block text-sm font-semibold text-gray-900">
+                                Artistic Vision & Background <span className="text-red-500">*</span>
+                            </label>
+                            <Textarea
+                                value={vision}
+                                onChange={(e) => setVision(e.target.value)}
+                                placeholder="Describe your creative process, your inspirations, and the themes you explore in your work. This helps our curation team understand your profile."
+                                rows={5}
+                                className="resize-none rounded-xl bg-gray-50/50 border-gray-200 focus:border-purple-500 focus:ring-purple-500 p-4"
+                                required
+                                minLength={20}
+                                maxLength={500}
+                            />
+                            <div className="flex justify-between items-center text-xs text-gray-500 mt-2">
+                                <span>Minimum 20 characters</span>
+                                <span>{vision.length}/500</span>
+                            </div>
+                        </div>
+
+                        {/* 4. Portfolio URL */}
+                        <div className="space-y-3">
+                            <label className="block text-sm font-semibold text-gray-900">
+                                External Portfolio <span className="text-gray-400 font-normal">(optional)</span>
+                            </label>
+                            <Input
+                                value={portfolioUrl}
+                                onChange={(e) => setPortfolioUrl(e.target.value)}
+                                placeholder="https://instagram.com/yourhandle"
+                                type="url"
+                                className="h-12 bg-gray-50/50 border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-xl"
+                            />
+                            <p className="text-xs text-gray-500">Link to your Instagram, Behance, or personal website.</p>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="pt-6">
+                            <Button
+                                type="submit"
+                                disabled={submitting || !nameAvailable || vision.length < 20 || !medium || !experience}
+                                className="w-full bg-purple-900 hover:bg-purple-950 text-white h-14 text-lg font-medium rounded-xl transition-all shadow-lg shadow-purple-900/20"
+                            >
+                                {submitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                        Submitting Application...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Paintbrush className="mr-2 h-5 w-5" />
+                                        Submit for Verification
+                                    </>
+                                )}
+                            </Button>
+                            <p className="text-xs text-center text-gray-400 mt-4">
+                                Our curation team reviews all applications to maintain platform quality. You'll hear back within 24 hours.
+                            </p>
                         </div>
                     </form>
                 </motion.div>
+            </div>
+            {/* Custom scrollbar styles can be added in globals.css, but standard scrollbar works */}
+        </div>
+    );
+
+    return (
+        <div className="flex min-h-[calc(100vh-80px)] bg-gray-50">
+            {/* Split Screen Left Side - Artistic Visual */}
+            <div className="hidden lg:flex flex-col relative w-[45%] bg-black">
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src="https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=1600"
+                        alt="Art Inspiration"
+                        className="w-full h-full object-cover opacity-60 mix-blend-overlay"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                </div>
+
+                <div className="relative z-10 flex flex-col justify-end h-full p-16 pb-24">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                    >
+                        <Quote className="w-12 h-12 text-white/30 mb-8" />
+                        <h2 className="text-5xl font-serif text-white leading-[1.1] mb-6 font-medium">
+                            "Art washes away from the soul the dust of everyday life."
+                        </h2>
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-[1px] bg-purple-400" />
+                            <p className="text-xl text-purple-200 font-light tracking-wide">— Pablo Picasso</p>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* Split Screen Right Side - Content */}
+            <div className="flex flex-col w-full lg:w-[55%] relative">
+                {existingApp ? renderApplicationStatus() : renderApplicationForm()}
             </div>
         </div>
     );
