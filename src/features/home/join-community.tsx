@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
+import Link from "next/link";
 
 function JoinCommunity() {
   return (
@@ -9,24 +10,19 @@ function JoinCommunity() {
           Join Our Art Community
         </h2>
         <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-          Whether you&apos;re an artist looking to showcase your work or a collector
-          in search of unique pieces, become part of our growing community of
-          art enthusiasts.
+          Discover extraordinary art, connect with creators, and build your
+          collection. Want to sell your art? You can open a shop anytime
+          after joining.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-purple-500 hover:bg-purple-600 cursor-pointer"
-          >
-            Join as Artist
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="bg-transparent text-white hover:bg-white/10 border-white cursor-pointer hover:text-white"
-          >
-            Join as Collector
-          </Button>
+          <Link href="/signup">
+            <Button
+              size="lg"
+              className="bg-purple-500 hover:bg-purple-600 cursor-pointer"
+            >
+              Join the Community
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

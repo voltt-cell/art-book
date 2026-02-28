@@ -10,6 +10,7 @@ import { staggerContainer, fadeInUp } from "@/lib/animations";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useState } from "react";
+import { ArtisticLoader } from "@/components/ui/artistic-loader";
 
 type OrderRow = {
     id: string;
@@ -115,11 +116,7 @@ export default function BuyerDashboard() {
     };
 
     if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-            </div>
-        );
+        return <ArtisticLoader fullScreen />;
     }
 
     if (!isAuthenticated) {
@@ -134,8 +131,21 @@ export default function BuyerDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
-            <div className="container mx-auto py-10 px-4">
+        <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+            {/* Ambient Artistic Background */}
+            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-br from-indigo-100/40 via-purple-100/40 to-pink-50/20 pointer-events-none" />
+            <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+                className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-purple-300/20 blur-[120px] pointer-events-none"
+            />
+            <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
+                className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-blue-300/20 blur-[120px] pointer-events-none"
+            />
+
+            <div className="container mx-auto py-12 px-4 relative z-10">
                 {/* Header */}
                 <motion.div
                     initial="hidden"
@@ -154,7 +164,7 @@ export default function BuyerDashboard() {
                     initial="hidden"
                     animate="visible"
                     variants={fadeInUp}
-                    className="flex gap-2 mb-8 bg-white rounded-xl p-1.5 border border-gray-100 shadow-sm w-fit"
+                    className="flex gap-2 mb-10 bg-white/60 backdrop-blur-xl rounded-2xl p-2 border border-white/50 shadow-sm w-fit relative z-20"
                 >
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
@@ -201,7 +211,7 @@ export default function BuyerDashboard() {
                     {activeTab === "summary" && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Profile Card */}
-                            <motion.div variants={fadeInUp} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm md:col-span-1 h-fit">
+                            <motion.div variants={fadeInUp} className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:col-span-1 h-fit transition-transform hover:-translate-y-1 duration-300">
                                 <div className="flex flex-col items-center text-center">
                                     <div className="h-24 w-24 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-3xl font-bold mb-4 border-4 border-white shadow-md">
                                         {user?.profileImage ? (
@@ -214,11 +224,11 @@ export default function BuyerDashboard() {
                                     <p className="text-gray-500 text-sm mb-6">{user?.email}</p>
 
                                     <div className="w-full grid grid-cols-2 gap-4 text-center mb-6">
-                                        <div className="bg-gray-50 p-3 rounded-xl">
+                                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-2xl border border-purple-100/50">
                                             <p className="text-2xl font-bold text-gray-900">{orders?.length || 0}</p>
                                             <p className="text-xs text-gray-500 uppercase tracking-wide">Orders</p>
                                         </div>
-                                        <div className="bg-gray-50 p-3 rounded-xl">
+                                        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-2xl border border-teal-100/50">
                                             <p className="text-2xl font-bold text-gray-900">{uniqueWon.length}</p>
                                             <p className="text-xs text-gray-500 uppercase tracking-wide">Wins</p>
                                         </div>
@@ -232,7 +242,7 @@ export default function BuyerDashboard() {
                             </motion.div>
 
                             {/* Recent Activity */}
-                            <motion.div variants={fadeInUp} className="bg-white rounded-2xl border border-gray-100 shadow-sm md:col-span-2 flex flex-col">
+                            <motion.div variants={fadeInUp} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:col-span-2 flex flex-col overflow-hidden transition-transform hover:-translate-y-1 duration-300">
                                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                                     <h3 className="font-serif font-bold text-lg text-gray-900 flex items-center">
                                         <Clock className="w-5 h-5 mr-2 text-purple-500" />
@@ -295,7 +305,7 @@ export default function BuyerDashboard() {
 
                     {/* My Orders Tab */}
                     {activeTab === "orders" && (
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                             {ordersLoading ? (
                                 <div className="py-12 flex justify-center">
                                     <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
@@ -359,7 +369,7 @@ export default function BuyerDashboard() {
 
                     {/* My Bids Tab */}
                     {activeTab === "bids" && (
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                             {bidsLoading ? (
                                 <div className="py-12 flex justify-center">
                                     <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
@@ -474,13 +484,13 @@ export default function BuyerDashboard() {
                                             <motion.div
                                                 key={item.auction.id}
                                                 variants={fadeInUp}
-                                                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                                                className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden hover:shadow-[0_20px_40px_rgb(0,0,0,0.1)] transition-all duration-300 transform hover:-translate-y-1 group"
                                             >
-                                                <div className="relative">
+                                                <div className="relative overflow-hidden">
                                                     <img
                                                         src={item.artwork.imageUrl}
                                                         alt={item.artwork.title}
-                                                        className="w-full h-48 object-cover"
+                                                        className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                                     />
                                                     <div className="absolute top-3 right-3">
                                                         <span

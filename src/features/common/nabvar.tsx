@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Heart, Store, LogOut, LayoutDashboard, Settings } from "lucide-react";
+import { Search, Heart, Store, LogOut, Settings, ShoppingBag, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { useRouter, usePathname } from "next/navigation";
@@ -18,7 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
-  const { user, isAuthenticated, isArtist, isBuyer, logout } = useAuth();
+  const { user, isAuthenticated, hasShop, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -34,6 +34,14 @@ const Navbar = () => {
       router.push(`/artworks?search=${encodeURIComponent(searchQuery)}`);
     }
   };
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
@@ -75,10 +83,6 @@ const Navbar = () => {
           </Link>
         </nav>
 
-
-
-
-
         {/* Right Actions */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Global Search */}
@@ -111,9 +115,9 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Shop Icon - Artists Only */}
-          {isArtist && (
-            <Link href="/artist/dashboard">
+          {/* Shop Icon - Only when user has a shop */}
+          {hasShop && (
+            <Link href="/shop/dashboard">
               <Button variant="ghost" size="icon" className="hover:text-purple-600 hover:bg-purple-50 rounded-full">
                 <Store className="h-5 w-5" />
               </Button>
@@ -122,7 +126,6 @@ const Navbar = () => {
 
           {/* Cart - Always Visible */}
           <CartBadge />
-
 
           {/* User Menu */}
           {isAuthenticated ? (
@@ -147,25 +150,44 @@ const Navbar = () => {
                   </Avatar>
                   <div className="flex flex-col overflow-hidden">
                     <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
-                    <Link href={isArtist ? `/artist/${user?.id}` : `/user/${user?.id}`} className="text-xs text-gray-500 hover:text-purple-600 hover:underline transition-colors">
-                      View your profile
-                    </Link>
+                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                   </div>
                 </div>
 
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
 
-                {isBuyer && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/buyer/dashboard" className="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors group">
-                        <div className="p-1.5 bg-gray-100 rounded-md mr-3 group-hover:bg-white transition-colors">
-                          <LayoutDashboard className="h-4 w-4 text-gray-500 group-hover:text-purple-600" />
-                        </div>
-                        Purchases and reviews
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
+                {/* Purchases & Orders - Always visible */}
+                <DropdownMenuItem asChild>
+                  <Link href="/buyer/dashboard" className="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors group">
+                    <div className="p-1.5 bg-gray-100 rounded-md mr-3 group-hover:bg-white transition-colors">
+                      <ShoppingBag className="h-4 w-4 text-gray-500 group-hover:text-purple-600" />
+                    </div>
+                    Purchases & Orders
+                  </Link>
+                </DropdownMenuItem>
+
+                {/* My Shop - if they have one */}
+                {hasShop && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/shop/dashboard" className="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors group">
+                      <div className="p-1.5 bg-gray-100 rounded-md mr-3 group-hover:bg-white transition-colors">
+                        <Store className="h-4 w-4 text-gray-500 group-hover:text-purple-600" />
+                      </div>
+                      My Shop
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {/* Open Your Shop - if they don't have one */}
+                {!hasShop && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/shop/apply" className="flex items-center px-3 py-2.5 text-sm font-medium text-purple-700 hover:bg-purple-50 rounded-lg cursor-pointer transition-colors group">
+                      <div className="p-1.5 bg-purple-100 rounded-md mr-3 group-hover:bg-purple-200 transition-colors">
+                        <Sparkles className="h-4 w-4 text-purple-600" />
+                      </div>
+                      Open Your Shop
+                    </Link>
+                  </DropdownMenuItem>
                 )}
 
                 <DropdownMenuItem asChild>

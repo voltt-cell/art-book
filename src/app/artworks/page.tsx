@@ -30,13 +30,12 @@ type ArtistResponse = {
     profileImage: string | null;
 };
 
-import { ART_CATEGORIES, LISTING_TYPES } from "@/lib/constants";
+import { ART_CATEGORIES } from "@/lib/constants";
 
 // ... (remove local constant definitions)
 
 export default function ArtworksPage() {
     const [selectedCategory, setSelectedCategory] = useState("all");
-    const [selectedListing, setSelectedListing] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
 
     const { data: artworksRaw, isLoading } = useSWR<ArtworkResponse[]>(
@@ -176,7 +175,7 @@ export default function ArtworksPage() {
                             No artworks found
                         </h2>
                         <p className="text-gray-500 mb-6">
-                            We couldn't find any artworks matching your current filters.
+                            We couldn&apos;t find any artworks matching your current filters.
                         </p>
                         <button
                             onClick={() => {

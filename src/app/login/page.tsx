@@ -49,11 +49,16 @@ const Login = () => {
 
   async function onSubmit(values: LoginFormValues) {
     try {
-      await login(values.email, values.password);
+      const userData = await login(values.email, values.password);
       toast.success("Login successful!", {
         description: "Welcome back to ArtBook!",
       });
-      router.push("/");
+
+      if (userData?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (error) {
       toast.error("Login failed", {
         description: (error as Error).message,

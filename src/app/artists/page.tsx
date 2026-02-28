@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import ArtistCard from "@/features/home/artist-card";
 import { ArtistSkeletonGrid } from "@/components/artist-skeleton";
 

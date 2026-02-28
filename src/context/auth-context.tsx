@@ -11,18 +11,18 @@ export type User = {
     role: "artist" | "buyer" | "admin";
     bio?: string;
     profileImage?: string;
+    hasShop?: boolean;
 };
 
 type AuthContextType = {
     user: User | null;
     loading: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    signup: (data: { email: string; password: string; name: string; role: string; shopName?: string }) => Promise<void>;
+    login: (email: string, password: string) => Promise<User>;
+    signup: (data: { email: string; password: string; name: string }) => Promise<void>;
     logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
     isAuthenticated: boolean;
-    isArtist: boolean;
-    isBuyer: boolean;
+    hasShop: boolean;
     isAdmin: boolean;
 };
 
@@ -52,12 +52,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    async function login(email: string, password: string) {
+    async function login(email: string, password: string): Promise<User> {
         const res = await api.post<{ token: string; user: User }>("/auth/login", { email, password });
         setUser(res.user);
+        return res.user;
     }
 
-    async function signup(data: { email: string; password: string; name: string; role: string; shopName?: string }) {
+    async function signup(data: { email: string; password: string; name: string }) {
         await api.post("/auth/signup", data);
         // Auto-login after signup
         await login(data.email, data.password);
@@ -78,8 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 logout,
                 refreshUser: checkAuth,
                 isAuthenticated: !!user,
-                isArtist: user?.role === "artist",
-                isBuyer: user?.role === "buyer",
+                hasShop: user?.hasShop === true || user?.role === "artist",
                 isAdmin: user?.role === "admin",
             }}
         >

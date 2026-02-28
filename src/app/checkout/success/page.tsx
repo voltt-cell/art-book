@@ -1,27 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 import Link from "next/link";
 import { api } from "@/lib/api";
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     const { clearCart } = useCart();
     const sessionId = searchParams.get("session_id");
 
     useEffect(() => {
         if (sessionId) {
-            // 1. Clear frontend cart state immediately
             clearCart();
-
-            // 2. Force backend to verify session and update DB status
-            // This is a robust fallback if webhooks fail locally
             api.get(`/payments/verify-session?session_id=${sessionId}`)
                 .catch(err => console.error("Verification failed", err));
         }
@@ -73,5 +68,17 @@ export default function CheckoutSuccessPage() {
                 </div>
             </motion.div>
         </div>
+    );
+}
+
+export default function CheckoutSuccessPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+            </div>
+        }>
+            <CheckoutSuccessContent />
+        </Suspense>
     );
 }

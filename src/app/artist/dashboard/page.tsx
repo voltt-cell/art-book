@@ -11,6 +11,7 @@ import Link from "next/link";
 import { fetcher } from "@/lib/swr";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
 import { ArtworkSkeletonGrid } from "@/components/artwork-skeleton";
+import { ArtisticLoader } from "@/components/ui/artistic-loader";
 
 type ArtworkResponse = {
     id: string;
@@ -58,7 +59,7 @@ const formatPrice = (price: number) =>
     }).format(price);
 
 export default function ArtistDashboard() {
-    const { user, isArtist, loading: authLoading } = useAuth();
+    const { user, hasShop, loading: authLoading } = useAuth();
     const router = useRouter();
 
     const { data: artworksRaw, isLoading } = useSWR<ArtworkResponse[]>(
@@ -117,14 +118,10 @@ export default function ArtistDashboard() {
     }));
 
     if (authLoading) {
-        return (
-            <div className="container mx-auto py-10 px-4 max-w-6xl">
-                <ArtworkSkeletonGrid count={6} />
-            </div>
-        );
+        return <ArtisticLoader fullScreen />;
     }
 
-    if (!isArtist) {
+    if (!hasShop) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <p className="text-gray-500">
@@ -134,104 +131,114 @@ export default function ArtistDashboard() {
         );
     }
 
-    // Summary stats
-    const totalAuctions = artworks.filter((a) => a.isAuction).length;
-    const totalBids = Object.values(bidsByArtwork).reduce(
-        (s, b) => s + b.count,
-        0
-    );
+
 
 
 
     return (
-        <div className="container mx-auto py-10 px-4 max-w-6xl">
+        <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+            {/* Ambient Artistic Background */}
+            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-br from-indigo-100/40 via-purple-100/40 to-pink-50/20 pointer-events-none" />
             <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={fadeInUp}
-                className="flex justify-between items-center mb-8"
-            >
-                <div>
-                    <h1 className="text-3xl font-serif font-bold">
-                        {user?.name}
-                    </h1>
-                    <p className="text-gray-500 mt-1 max-w-2xl">
-                        {user?.bio || "Artist on ArtBook"}
-                    </p>
-                </div>
-                <Button
-                    onClick={() => router.push("/artist/create")}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Create Artwork
-                </Button>
-            </motion.div>
+                animate={{ rotate: 360 }}
+                transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+                className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-purple-300/20 blur-[120px] pointer-events-none"
+            />
+            <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
+                className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-teal-300/20 blur-[120px] pointer-events-none"
+            />
 
-
-
-            {isLoading ? (
-                <ArtworkSkeletonGrid count={6} />
-            ) : artworks.length > 0 ? (
+            <div className="container mx-auto py-12 px-4 max-w-7xl relative z-10">
                 <motion.div
-                    variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    variants={fadeInUp}
+                    className="flex justify-between items-center mb-8"
                 >
-                    {artworks.map((artwork) => (
-                        <motion.div
-                            key={artwork.id}
-                            variants={fadeInUp}
-                            className="relative group/card"
-                        >
-                            <ArtworkCard
-                                artwork={artwork}
-                                artist={{
-                                    id: user!.id,
-                                    name: user!.name,
-                                    profileImage:
-                                        user!.profileImage || "",
-                                }}
-                            />
-                            {/* Edit overlay */}
-                            <Link
-                                href={`/artist/edit/${artwork.id}`}
-                                className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm opacity-0 group-hover/card:opacity-100 transition-opacity hover:bg-white"
-                            >
-                                <Pencil className="w-4 h-4 text-purple-600" />
-                            </Link>
-                            {/* Bid info overlay for auction artworks */}
-                            {/* Bid info overlay for auction artworks */}
-                            {artwork.isAuction && bidsByArtwork[artwork.id] && (
-                                <div className="absolute top-3 right-3 z-10">
-                                    <div className="bg-white/90 backdrop-blur-md text-purple-900 text-xs font-bold rounded-full px-3 py-1 shadow-sm border border-purple-100 flex items-center gap-2">
-                                        <span className="flex h-2 w-2 rounded-full bg-purple-600"></span>
-                                        <span>{bidsByArtwork[artwork.id].count} {bidsByArtwork[artwork.id].count === 1 ? "Bid" : "Bids"}</span>
-                                        <span className="text-purple-400">|</span>
-                                        <span>{formatPrice(bidsByArtwork[artwork.id].highestBid)}</span>
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    ))}
-                </motion.div>
-            ) : (
-                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-                    <Palette className="w-16 h-16 text-purple-200 mx-auto mb-4" />
-                    <h2 className="text-xl font-serif font-semibold mb-2">
-                        Your canvas awaits
-                    </h2>
-                    <p className="text-gray-500 mb-6">
-                        Start sharing your art with the world
-                    </p>
+                    <div>
+                        <h1 className="text-3xl font-serif font-bold">
+                            {user?.name}
+                        </h1>
+                        <p className="text-gray-500 mt-1 max-w-2xl">
+                            {user?.bio || "Artist on ArtBook"}
+                        </p>
+                    </div>
                     <Button
                         onClick={() => router.push("/artist/create")}
-                        className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6"
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
                     >
-                        <Plus className="mr-2 h-4 w-4" /> Create Your First Artwork
+                        <Plus className="mr-2 h-4 w-4" /> Create Artwork
                     </Button>
-                </div>
-            )}
+                </motion.div>
+
+
+
+                {isLoading ? (
+                    <ArtworkSkeletonGrid count={6} />
+                ) : artworks.length > 0 ? (
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="visible"
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                        {artworks.map((artwork) => (
+                            <motion.div
+                                key={artwork.id}
+                                variants={fadeInUp}
+                                className="relative group/card"
+                            >
+                                <ArtworkCard
+                                    artwork={artwork}
+                                    artist={{
+                                        id: user!.id,
+                                        name: user!.name,
+                                        profileImage:
+                                            user!.profileImage || "",
+                                    }}
+                                />
+                                {/* Edit overlay */}
+                                <Link
+                                    href={`/artist/edit/${artwork.id}`}
+                                    className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm opacity-0 group-hover/card:opacity-100 transition-opacity hover:bg-white"
+                                >
+                                    <Pencil className="w-4 h-4 text-purple-600" />
+                                </Link>
+                                {/* Bid info overlay for auction artworks */}
+                                {/* Bid info overlay for auction artworks */}
+                                {artwork.isAuction && bidsByArtwork[artwork.id] && (
+                                    <div className="absolute top-3 right-3 z-10">
+                                        <div className="bg-white/90 backdrop-blur-md text-purple-900 text-xs font-bold rounded-full px-3 py-1 shadow-sm border border-purple-100 flex items-center gap-2">
+                                            <span className="flex h-2 w-2 rounded-full bg-purple-600"></span>
+                                            <span>{bidsByArtwork[artwork.id].count} {bidsByArtwork[artwork.id].count === 1 ? "Bid" : "Bids"}</span>
+                                            <span className="text-purple-400">|</span>
+                                            <span>{formatPrice(bidsByArtwork[artwork.id].highestBid)}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                ) : (
+                    <div className="text-center py-20 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                        <Palette className="w-16 h-16 text-purple-300 drop-shadow-sm mx-auto mb-4" />
+                        <h2 className="text-xl font-serif font-semibold mb-2">
+                            Your canvas awaits
+                        </h2>
+                        <p className="text-gray-500 mb-6">
+                            Start sharing your art with the world
+                        </p>
+                        <Button
+                            onClick={() => router.push("/artist/create")}
+                            className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6"
+                        >
+                            <Plus className="mr-2 h-4 w-4" /> Create Your First Artwork
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

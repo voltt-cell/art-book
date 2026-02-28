@@ -41,7 +41,7 @@ export default function EditArtworkPage({
 }) {
     const { id } = use(params);
     const router = useRouter();
-    const { user, isArtist } = useAuth();
+    const { user, hasShop } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { data: artwork, isLoading } = useSWR<ArtworkResponse>(
@@ -179,7 +179,7 @@ export default function EditArtworkPage({
         }
     };
 
-    if (!isArtist) {
+    if (!hasShop) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <p className="text-gray-500">Only artists can edit artworks.</p>

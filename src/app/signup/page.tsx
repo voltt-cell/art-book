@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,21 +31,9 @@ const signupSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
-  shopName: z.string().optional(),
-  role: z.enum(["buyer", "seller"], {
-    required_error: "Please select a role.",
-  }),
   terms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
-}).refine((data) => {
-  if (data.role === 'seller' && (!data.shopName || data.shopName.length < 2)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Shop Name is required for sellers (min 2 chars).",
-  path: ["shopName"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -62,32 +49,23 @@ const Signup = () => {
       name: "",
       email: "",
       password: "",
-      shopName: "",
-      role: "buyer",
       terms: false,
     },
   });
 
   async function onSubmit(values: SignupFormValues) {
     try {
-      const role = values.role === "seller" ? "artist" : "buyer";
       await signup({
         email: values.email,
         password: values.password,
         name: values.name,
-        shopName: role === "artist" ? values.shopName : undefined,
-        role,
       });
 
       toast.success("Account created successfully!", {
-        description: `Welcome to ArtBook! You've joined as a ${values.role}.`,
+        description: "Welcome to ArtBook!",
       });
 
-      if (role === "artist") {
-        router.push("/artist/dashboard");
-      } else {
-        router.push("/");
-      }
+      router.push("/");
     } catch (error) {
       toast.error("Signup failed", {
         description: (error as Error).message,
@@ -108,11 +86,11 @@ const Signup = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-[rgba(26,31,44,0.8)] to-[rgba(26,31,44,0.4)]" />
         <div className="relative z-10 flex flex-col justify-center px-12">
           <h1 className="text-4xl font-serif font-bold text-white mb-6">
-            Join our community of artists and collectors
+            Join our community of art lovers
           </h1>
           <p className="text-lg text-gray-200 mb-8">
             Discover extraordinary art, connect with creators, and build your
-            collection.
+            collection. Want to sell? Open a shop anytime from your profile.
           </p>
           <div className="flex space-x-2">
             <div className="w-12 h-1 bg-purple-500 rounded-full"></div>
@@ -149,22 +127,6 @@ const Signup = () => {
                   </FormItem>
                 )}
               />
-
-              {form.watch("role") === "seller" && (
-                <FormField
-                  control={form.control}
-                  name="shopName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Shop Name <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your unique shop name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
 
               <FormField
                 control={form.control}
@@ -214,49 +176,6 @@ const Signup = () => {
                           </span>
                         </Button>
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>I want to join as</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-slate-50 transition-colors">
-                          <RadioGroupItem value="buyer" id="buyer" />
-                          <label
-                            htmlFor="buyer"
-                            className="w-full cursor-pointer font-medium"
-                          >
-                            Art Buyer/Collector
-                            <p className="text-sm font-normal text-gray-600">
-                              I want to explore and collect artwork
-                            </p>
-                          </label>
-                        </div>
-                        <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-slate-50 transition-colors">
-                          <RadioGroupItem value="seller" id="seller" />
-                          <label
-                            htmlFor="seller"
-                            className="w-full cursor-pointer font-medium"
-                          >
-                            Artist/Seller
-                            <p className="text-sm font-normal text-gray-600">
-                              I want to showcase and sell my artwork
-                            </p>
-                          </label>
-                        </div>
-                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

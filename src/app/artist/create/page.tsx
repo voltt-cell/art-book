@@ -27,7 +27,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787";
 
 export default function CreateArtworkPage() {
     const router = useRouter();
-    const { isArtist, user } = useAuth();
+    const { hasShop, user } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [loading, setLoading] = useState(false);
@@ -136,11 +136,8 @@ export default function CreateArtworkPage() {
                 description: "Your masterpiece is now live.",
             });
             router.push("/artist/dashboard");
-        } catch (error: any) {
-            let msg = error.message;
-            if (error.response?.data?.error) {
-                msg = JSON.stringify(error.response.data.error);
-            }
+        } catch (error: unknown) {
+            const msg = (error as Error).message;
             toast.error("Failed to create artwork", {
                 description: msg,
             });
@@ -149,7 +146,7 @@ export default function CreateArtworkPage() {
         }
     };
 
-    if (!isArtist) {
+    if (!hasShop) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
@@ -176,7 +173,7 @@ export default function CreateArtworkPage() {
                 <div className="absolute bottom-12 left-12 z-20 text-white max-w-md">
                     <h2 className="text-4xl font-serif font-bold mb-4">Share Your Vision</h2>
                     <p className="text-lg text-gray-200 leading-relaxed">
-                        "Every artist was first an amateur. The more you paint, the more you become."
+                        &quot;Every artist was first an amateur. The more you paint, the more you become.&quot;
                     </p>
                     {/* <div className="mt-6 flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full border-2 border-white/30 overflow-hidden">

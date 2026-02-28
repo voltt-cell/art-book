@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787";
 
 export default function SettingsPage() {
-    const { user, isAuthenticated, loading, refreshUser, isArtist } = useAuth();
+    const { user, isAuthenticated, loading, refreshUser, hasShop } = useAuth();
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [activeTab, setActiveTab] = useState<"profile" | "password">("profile");
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Shop Name (Artists only) */}
-                        {isArtist && (
+                        {hasShop && (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Shop Name
@@ -252,20 +252,18 @@ export default function SettingsPage() {
                             <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
                         </div>
 
-                        {/* Bio (visible for all but focused for artists) */}
-                        {isArtist && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Bio
-                                </label>
-                                <Textarea
-                                    value={bio}
-                                    onChange={(e) => setBio(e.target.value)}
-                                    placeholder="Tell us about yourself and your art..."
-                                    rows={4}
-                                />
-                            </div>
-                        )}
+                        {/* Bio */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Bio
+                            </label>
+                            <Textarea
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                placeholder="Tell us about yourself and your art..."
+                                rows={4}
+                            />
+                        </div>
 
                         <div className="flex justify-end">
                             <Button

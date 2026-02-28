@@ -2,7 +2,7 @@
 
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/context/auth-context";
-import { Loader2, Trash2, ArrowRight, ShoppingBag, ArrowLeft } from "lucide-react";
+import { Loader2, Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -43,7 +43,7 @@ export default function CartPage() {
                         Your cart is empty
                     </h2>
                     <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                        Looks like checking out art hasn't caught your eye yet?
+                        Looks like checking out art hasn&apos;t caught your eye yet?
                     </p>
                     <Link href="/artworks">
                         <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6">

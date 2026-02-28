@@ -1,17 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { motion } from "framer-motion";
-import { Gavel, Clock, Loader2 } from "lucide-react";
+import { Gavel, Loader2 } from "lucide-react";
 import AuctionCard from "@/features/auctions/auction-card";
-import { Button } from "@/components/ui/button";
 import { fetcher } from "@/lib/swr";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import { toast } from "sonner";
 
 type AuctionItem = {
     auction: {
@@ -40,12 +34,6 @@ type ArtistResponse = {
     name: string;
     profileImage: string | null;
 };
-
-const formatPrice = (price: number) =>
-    new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-    }).format(price);
 
 
 

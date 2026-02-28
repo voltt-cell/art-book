@@ -64,82 +64,76 @@ export default function AdminOrdersPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
-            <div className="container mx-auto py-10 px-4">
-                <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
-                    <Link href="/admin" className="inline-flex items-center text-sm text-gray-500 hover:text-purple-600 mb-4 transition-colors">
-                        <ArrowLeft className="h-4 w-4 mr-1" /> Back to Dashboard
-                    </Link>
-
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                        <div>
-                            <h1 className="text-3xl font-serif font-bold text-gray-900">Order Management</h1>
-                            <p className="text-gray-500 mt-1">{filtered.length} orders</p>
-                        </div>
-                        <div className="relative w-full sm:w-72">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input
-                                placeholder="Search by ID, status, or type..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
+        <div className="p-8">
+            <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h1 className="text-3xl font-serif font-bold text-gray-900">Order Management</h1>
+                        <p className="text-gray-500 mt-1">{filtered.length} orders</p>
                     </div>
-                </motion.div>
-
-                <motion.div variants={staggerContainer} initial="hidden" animate="visible">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="bg-gray-50/80 border-b border-gray-100">
-                                        <th className="text-left py-3 px-4 font-medium text-gray-500">Order ID</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-500">Amount</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-500">Type</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                                        <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filtered.map((order) => (
-                                        <motion.tr
-                                            key={order.id}
-                                            variants={fadeInUp}
-                                            className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
-                                        >
-                                            <td className="py-3 px-4">
-                                                <span className="font-mono text-xs text-gray-700">
-                                                    {order.id.slice(0, 8)}...
-                                                </span>
-                                            </td>
-                                            <td className="py-3 px-4 font-medium text-gray-900">
-                                                ${parseFloat(order.amount).toLocaleString()}
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600 capitalize">
-                                                    {order.type}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <span className={`text-xs font-medium px-2 py-1 rounded-full capitalize ${statusColors[order.status]}`}>
-                                                    {order.status}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 px-4 text-gray-500">
-                                                {new Date(order.createdAt).toLocaleDateString()}
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {filtered.length === 0 && (
-                            <div className="py-12 text-center text-gray-400">No orders found</div>
-                        )}
+                    <div className="relative w-full sm:w-72">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                            placeholder="Search by ID, status, or type..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-10"
+                        />
                     </div>
-                </motion.div>
-            </div>
+                </div>
+            </motion.div>
+
+            <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-gray-50/80 border-b border-gray-100">
+                                    <th className="text-left py-3 px-4 font-medium text-gray-500">Order ID</th>
+                                    <th className="text-left py-3 px-4 font-medium text-gray-500">Amount</th>
+                                    <th className="text-left py-3 px-4 font-medium text-gray-500">Type</th>
+                                    <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
+                                    <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map((order) => (
+                                    <motion.tr
+                                        key={order.id}
+                                        variants={fadeInUp}
+                                        className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                                    >
+                                        <td className="py-3 px-4">
+                                            <span className="font-mono text-xs text-gray-700">
+                                                {order.id.slice(0, 8)}...
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 font-medium text-gray-900">
+                                            ${parseFloat(order.amount).toLocaleString()}
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600 capitalize">
+                                                {order.type}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <span className={`text-xs font-medium px-2 py-1 rounded-full capitalize ${statusColors[order.status]}`}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-gray-500">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {filtered.length === 0 && (
+                        <div className="py-12 text-center text-gray-400">No orders found</div>
+                    )}
+                </div>
+            </motion.div>
         </div>
     );
 }

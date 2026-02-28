@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 
@@ -63,7 +62,7 @@ type AuctionItem = {
 };
 
 const Page = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  // Unused state removed
 
   const { data: artworksRaw, isLoading: artworksLoading } = useSWR<ArtworkResponse[]>(
     "/artworks",
@@ -76,7 +75,7 @@ const Page = () => {
     fetcher
   );
 
-  const { data: auctionItemsRaw, isLoading: auctionsLoading } = useSWR<AuctionItem[]>(
+  const { data: auctionItemsRaw } = useSWR<AuctionItem[]>(
     "/auctions",
     fetcher,
     { refreshInterval: 15000 }
