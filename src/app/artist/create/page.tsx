@@ -161,40 +161,41 @@ export default function CreateArtworkPage() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-64px)] bg-gray-50">
+        <div className="flex h-[calc(100vh-64px)] bg-slate-50 relative overflow-hidden">
+            {/* Ambient Artistic Background */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <img
+                    src="/assets/oil_bg.png"
+                    alt="abstract atmospheric background"
+                    className="w-full h-full object-cover opacity-60 mix-blend-multiply"
+                />
+            </div>
             {/* Left Side - Inspirational Image */}
-            <div className="hidden lg:block w-5/12 relative bg-gray-900 border-r border-gray-200">
-                <div className="absolute inset-0 bg-black/40 z-10" />
+            <div className="hidden lg:block w-5/12 relative bg-gray-900 border-r border-white/20 shadow-2xl z-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-black/20 z-10" />
                 <img
                     src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=2545&auto=format&fit=crop"
                     alt="Artistic Workspace"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-90"
                 />
-                <div className="absolute bottom-12 left-12 z-20 text-white max-w-md">
-                    <h2 className="text-4xl font-serif font-bold mb-4">Share Your Vision</h2>
-                    <p className="text-lg text-gray-200 leading-relaxed">
-                        &quot;Every artist was first an amateur. The more you paint, the more you become.&quot;
-                    </p>
-                    {/* <div className="mt-6 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full border-2 border-white/30 overflow-hidden">
-                            <img src={user?.profileImage || ""} className="h-full w-full object-cover" />
-                        </div>
-                        <div>
-                            <p className="font-medium">{user?.name}</p>
-                            <p className="text-sm text-gray-400">Verified Artist</p>
-                        </div>
-                    </div> */}
+                <div className="absolute bottom-16 left-12 z-20 text-white max-w-md pr-8">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        <h2 className="text-5xl font-serif font-bold mb-6 leading-tight drop-shadow-lg">Share Your Vision</h2>
+                        <p className="text-xl text-gray-200 leading-relaxed font-light drop-shadow-md">
+                            &quot;Every artist was first an amateur. The more you paint, the more you become.&quot;
+                        </p>
+                    </motion.div>
                 </div>
             </div>
 
             {/* Right Side - Form */}
-            <div className="flex-1 overflow-y-auto h-[calc(100vh-64px)]">
-                <div className="max-w-2xl mx-auto py-12 px-6 lg:px-12">
+            <div className="flex-1 overflow-y-auto h-[calc(100vh-64px)] relative z-10">
+                <div className="max-w-3xl mx-auto py-12 px-6 lg:px-16">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8 transition-colors"
+                        className="flex items-center text-sm font-medium text-purple-600 hover:text-purple-800 mb-10 transition-colors"
                     >
-                        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+                        <ArrowLeft className="w-4 h-4 mr-1.5" /> Return to Studio
                     </button>
 
                     <motion.div
@@ -202,18 +203,18 @@ export default function CreateArtworkPage() {
                         animate="visible"
                         variants={fadeInUp}
                     >
-                        <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+                        <h1 className="text-4xl font-serif font-bold text-gray-900 mb-3 drop-shadow-sm">
                             Publish New Artwork
                         </h1>
-                        <p className="text-gray-500 mb-8">
-                            Fill in the details to list your artwork for sale or auction.
+                        <p className="text-lg text-gray-500 mb-10">
+                            Provide details to curate your piece and present it to the world.
                         </p>
 
-                        <form onSubmit={handleSubmit} className="space-y-8">
+                        <form onSubmit={handleSubmit} className="space-y-10">
 
                             {/* Detailed Info Section */}
-                            <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Artwork Details</h3>
+                            <div className="space-y-6 bg-white/60 backdrop-blur-2xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                <h3 className="text-xl font-serif font-bold text-gray-900 border-b border-gray-200/50 pb-3">Artwork Details</h3>
 
                                 {/* Title */}
                                 <div className="space-y-2">
@@ -298,8 +299,8 @@ export default function CreateArtworkPage() {
 
 
                             {/* Media Section */}
-                            <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Visuals</h3>
+                            <div className="space-y-6 bg-white/60 backdrop-blur-2xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                <h3 className="text-xl font-serif font-bold text-gray-900 border-b border-gray-200/50 pb-3">Visual Presentation</h3>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-700">
                                         Upload Images <span className="text-red-500">*</span> <span className="text-gray-400 font-normal text-xs ml-1">(Min 3 required)</span>
@@ -348,8 +349,8 @@ export default function CreateArtworkPage() {
 
 
                             {/* Pricing & Listing Section */}
-                            <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Listing Details</h3>
+                            <div className="space-y-6 bg-white/60 backdrop-blur-2xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                <h3 className="text-xl font-serif font-bold text-gray-900 border-b border-gray-200/50 pb-3">Curation & Pricing</h3>
 
                                 <div className="space-y-4">
                                     <label className="text-sm font-medium text-gray-700">Listing Type</label>
@@ -412,17 +413,17 @@ export default function CreateArtworkPage() {
                             </div>
 
                             {/* Submit */}
-                            <div className="pt-4 flex justify-end gap-4 pb-20">
-                                <Button type="button" variant="ghost" onClick={() => router.back()} disabled={loading} className="h-12 px-6">
+                            <div className="pt-8 flex justify-end gap-4 pb-20">
+                                <Button type="button" variant="ghost" onClick={() => router.back()} disabled={loading} className="h-12 px-6 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-white/50">
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading || images.length < 3 || !title || !price || !medium}
-                                    className="bg-gray-900 hover:bg-black text-white h-12 px-8 rounded-full text-base font-medium shadow-lg hover:shadow-xl transition-all"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white h-12 px-10 rounded-xl text-base font-medium shadow-lg hover:shadow-xl transition-all"
                                 >
                                     {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                                    {loading ? "Publishing..." : "Publish Artwork"}
+                                    {loading ? "Publishing Masterpiece..." : "Publish Artwork"}
                                 </Button>
                             </div>
                         </form>

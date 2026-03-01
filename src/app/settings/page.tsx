@@ -22,7 +22,6 @@ export default function SettingsPage() {
 
     // Profile state
     const [name, setName] = useState("");
-    const [shopName, setShopName] = useState("");
     const [bio, setBio] = useState("");
     const [profileImage, setProfileImage] = useState("");
     const [profileSaving, setProfileSaving] = useState(false);
@@ -38,7 +37,6 @@ export default function SettingsPage() {
     const [initialized, setInitialized] = useState(false);
     if (user && !initialized) {
         setName(user.name);
-        setShopName(user.shopName || "");
         setBio(user.bio || "");
         setProfileImage(user.profileImage || "");
         setInitialized(true);
@@ -81,7 +79,7 @@ export default function SettingsPage() {
     const handleProfileSave = async () => {
         setProfileSaving(true);
         try {
-            await api.put("/auth/profile", { name, bio, profileImage, shopName });
+            await api.put("/auth/profile", { name, bio, profileImage });
             await refreshUser();
             toast.success("Profile updated!");
         } catch (error) {
@@ -227,21 +225,6 @@ export default function SettingsPage() {
                                 placeholder="Your full name"
                             />
                         </div>
-
-                        {/* Shop Name (Artists only) */}
-                        {hasShop && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Shop Name
-                                </label>
-                                <Input
-                                    value={shopName}
-                                    onChange={(e) => setShopName(e.target.value)}
-                                    placeholder="Your custom shop name (optional)"
-                                />
-                                <p className="text-xs text-gray-400 mt-1">If blank, your Name will be used on artworks.</p>
-                            </div>
-                        )}
 
                         {/* Email (read-only) */}
                         <div>

@@ -59,18 +59,25 @@ export default function ShopDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 relative overflow-hidden">
-            {/* Ambient Artistic Background */}
-            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-br from-indigo-100/40 via-purple-100/40 to-pink-50/20 pointer-events-none" />
+        <div className="min-h-screen relative overflow-hidden bg-slate-50">
+            {/* Elegant Atmospheric Background */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <img
+                    src="/assets/watercolor_bg.png"
+                    alt="abstract artistic background"
+                    className="w-full h-full object-cover opacity-60 mix-blend-multiply"
+                />
+            </div>
+            {/* Orbs for extra depth */}
             <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-purple-300/20 blur-[120px] pointer-events-none"
+                className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-purple-300/20 blur-[120px] pointer-events-none z-0"
             />
             <motion.div
                 animate={{ rotate: -360 }}
                 transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
-                className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-teal-300/20 blur-[120px] pointer-events-none"
+                className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-teal-300/20 blur-[120px] pointer-events-none z-0"
             />
 
             <div className="container mx-auto py-12 px-4 max-w-7xl relative z-10">
@@ -93,19 +100,19 @@ export default function ShopDashboard() {
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                         {[
-                            { label: "Total Artworks", value: artworks.length, icon: ImageIcon, gradient: "from-purple-500 to-indigo-600" },
-                            { label: "Active Listings", value: activeListings, icon: Package, gradient: "from-blue-500 to-cyan-500" },
-                            { label: "Auctions", value: auctionListings, icon: Gavel, gradient: "from-amber-500 to-orange-500" },
-                            { label: "Revenue", value: formatCurrency(totalRevenue), icon: DollarSign, gradient: "from-green-500 to-emerald-500" },
+                            { label: "Total Artworks", value: artworks.length, icon: ImageIcon, gradient: "from-purple-500 to-indigo-600", shadow: "shadow-purple-500/20" },
+                            { label: "Active Listings", value: activeListings, icon: Package, gradient: "from-blue-500 to-cyan-500", shadow: "shadow-blue-500/20" },
+                            { label: "Auctions", value: auctionListings, icon: Gavel, gradient: "from-amber-500 to-orange-500", shadow: "shadow-orange-500/20" },
+                            { label: "Revenue", value: formatCurrency(totalRevenue), icon: DollarSign, gradient: "from-green-500 to-emerald-500", shadow: "shadow-emerald-500/20" },
                         ].map((stat) => (
-                            <div key={stat.label} className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/50 shadow-sm hover:-translate-y-1 transition-transform duration-300">
+                            <div key={stat.label} className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-gray-500 mb-1">{stat.label}</p>
-                                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                                        <p className="text-sm font-medium text-gray-500 mb-1">{stat.label}</p>
+                                        <p className="text-3xl font-serif font-bold text-gray-900">{stat.value}</p>
                                     </div>
-                                    <div className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white`}>
-                                        <stat.icon className="h-5 w-5" />
+                                    <div className={`p-3.5 rounded-2xl bg-gradient-to-br ${stat.gradient} text-white shadow-lg ${stat.shadow}`}>
+                                        <stat.icon className="h-6 w-6" />
                                     </div>
                                 </div>
                             </div>
@@ -115,53 +122,53 @@ export default function ShopDashboard() {
                     {/* Quick Actions */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                         <Link href="/artist/create" className="group">
-                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/50 shadow-sm hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                            <div className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-purple-100 rounded-xl group-hover:bg-purple-200 transition-colors">
-                                            <Plus className="h-5 w-5 text-purple-600" />
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-purple-100/80 rounded-2xl group-hover:bg-purple-200 transition-colors shadow-sm">
+                                            <Plus className="h-6 w-6 text-purple-600" />
                                         </div>
-                                        <span className="font-medium text-gray-900">Add New Artwork</span>
+                                        <span className="font-serif font-bold text-lg text-gray-900">Add Artwork</span>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" />
                                 </div>
                             </div>
                         </Link>
-                        <Link href="/buyer/dashboard" className="group">
-                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/50 shadow-sm hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                        <Link href="/shop/orders" className="group">
+                            <div className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-blue-100 rounded-xl group-hover:bg-blue-200 transition-colors">
-                                            <Package className="h-5 w-5 text-blue-600" />
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-blue-100/80 rounded-2xl group-hover:bg-blue-200 transition-colors shadow-sm">
+                                            <Package className="h-6 w-6 text-blue-600" />
                                         </div>
-                                        <span className="font-medium text-gray-900">View Orders</span>
+                                        <span className="font-serif font-bold text-lg text-gray-900">View Sales</span>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                                 </div>
                             </div>
                         </Link>
-                        <Link href="/settings" className="group">
-                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/50 shadow-sm hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                        <Link href="/shop/settings" className="group">
+                            <div className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-gray-100 rounded-xl group-hover:bg-gray-200 transition-colors">
-                                            <Settings className="h-5 w-5 text-gray-600" />
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-gray-100/80 rounded-2xl group-hover:bg-gray-200 transition-colors shadow-sm">
+                                            <Settings className="h-6 w-6 text-gray-600" />
                                         </div>
-                                        <span className="font-medium text-gray-900">Shop Settings</span>
+                                        <span className="font-serif font-bold text-lg text-gray-900">Shop Settings</span>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                                    <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
                                 </div>
                             </div>
                         </Link>
                     </div>
 
                     {/* Recent Artworks */}
-                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-serif font-bold text-gray-900">Your Artworks</h2>
+                    <div className="bg-white/70 backdrop-blur-2xl rounded-[2rem] p-8 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100/50">
+                            <h2 className="text-2xl font-serif font-bold text-gray-900">Your Masterpieces</h2>
                             {artworks.length > 6 && (
-                                <Link href="/artist/dashboard" className="text-sm text-purple-600 hover:underline">
-                                    View All
+                                <Link href="/artist/dashboard" className="text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors flex items-center">
+                                    View All Gallery <ArrowRight className="ml-1 w-4 h-4" />
                                 </Link>
                             )}
                         </div>
