@@ -19,6 +19,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type ArtworkRow = {
     id: string;
@@ -46,6 +56,7 @@ export default function AdminArtworksPage() {
         fetcher
     );
     const [search, setSearch] = useState("");
+    const [deleteArtwork, setDeleteArtwork] = useState<{ id: string; title: string } | null>(null);
 
     const filtered = (artworks || []).filter(
         (a) =>
@@ -63,8 +74,7 @@ export default function AdminArtworksPage() {
         }
     };
 
-    const handleDelete = async (id: string, title: string) => {
-        if (!confirm(`Delete artwork "${title}"? This cannot be undone.`)) return;
+    const handleDelete = async (id: string) => {
         try {
             await api.delete(`/admin/artworks/${id}`);
             toast.success("Artwork deleted");
@@ -178,7 +188,7 @@ export default function AdminArtworksPage() {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => handleDelete(artwork.id, artwork.title)}
+                                                onClick={() => setDeleteArtwork({ id: artwork.id, title: artwork.title })}
                                                 className="text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -194,6 +204,26 @@ export default function AdminArtworksPage() {
                     )}
                 </div>
             </motion.div>
+
+            <AlertDialog open={!!deleteArtwork} onOpenChange={(open) => !open && setDeleteArtwork(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete the artwork "{deleteArtwork?.title}". This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => { if (deleteArtwork) handleDelete(deleteArtwork.id); setDeleteArtwork(null); }}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

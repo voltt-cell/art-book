@@ -19,6 +19,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type UserRow = {
     id: string;
@@ -43,6 +53,7 @@ export default function AdminUsersPage() {
         fetcher
     );
     const [search, setSearch] = useState("");
+    const [deleteUser, setDeleteUser] = useState<{ id: string; name: string } | null>(null);
 
     const filteredUsers = (users || []).filter(
         (u) =>
@@ -60,8 +71,7 @@ export default function AdminUsersPage() {
         }
     };
 
-    const handleDelete = async (userId: string, userName: string) => {
-        if (!confirm(`Are you sure you want to delete user "${userName}"? This cannot be undone.`)) return;
+    const handleDelete = async (userId: string) => {
         try {
             await api.delete(`/admin/users/${userId}`);
             toast.success("User deleted");
@@ -163,7 +173,7 @@ export default function AdminUsersPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => handleDelete(user.id, user.name)}
+                                                    onClick={() => setDeleteUser({ id: user.id, name: user.name })}
                                                     className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer rounded-full"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -185,6 +195,26 @@ export default function AdminUsersPage() {
                     )}
                 </div>
             </motion.div>
+
+            <AlertDialog open={!!deleteUser} onOpenChange={(open) => !open && setDeleteUser(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete the user "{deleteUser?.name}". This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => { if (deleteUser) handleDelete(deleteUser.id); setDeleteUser(null); }}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
